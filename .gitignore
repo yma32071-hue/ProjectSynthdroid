@@ -10,6 +10,7 @@ out-tsc
 
 # dependencies
 node_modules
+jd800-inspired-synth/build/
 
 # IDEs and editors
 /.idea

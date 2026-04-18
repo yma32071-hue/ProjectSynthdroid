@@ -1,0 +1,185 @@
+🔥 Replit Prompt: Professional 90s-Style Digital Synth (Standalone JUCE App + Plugin Ready)
+
+Build a fully functional standalone software synthesizer inspired by classic 1990s hardware digital synth workstations. The goal is to create a deep, hands-on, slider-driven synthesizer with a rich digital sound engine, similar in workflow and depth to high-end 90s rack synths.
+
+This must be a COMPLETE working JUCE project that compiles and runs.
+
+────────────────────────────────────────
+🧠 CORE REQUIREMENTS
+────────────────────────────────────────
+
+Language & Framework:
+- C++
+- JUCE (latest stable version)
+- CMake build system
+
+Application Type:
+- Primary: Standalone desktop synthesizer application
+- Secondary: Plugin-ready architecture (VST3/AU export capable)
+
+────────────────────────────────────────
+🎛️ SYNTH ENGINE (DEEP DIGITAL SYNTH)
+────────────────────────────────────────
+
+Voice Architecture:
+- 8–16 voice polyphony
+- Voice allocation with stealing
+- Each voice contains full signal chain
+
+Oscillators:
+- 2–4 oscillators per voice
+- Waveforms:
+  - Sine
+  - Saw
+  - Square
+  - Triangle
+  - Noise
+  - Wavetable slot (user-definable)
+- Detune, fine tune, stereo spread
+
+Filter:
+- Multi-mode filter system:
+  - Low-pass (12dB / 24dB)
+  - High-pass
+  - Band-pass
+- Resonance control
+- Envelope modulation routing
+
+Envelopes:
+- ADSR for amplitude
+- ADSR for filter
+- Smooth interpolation (no stepping artifacts)
+
+LFO System:
+- At least 2 LFOs per voice
+- Waveforms:
+  - Sine
+  - Triangle
+  - Square
+  - Random
+- Modulation targets:
+  - Pitch
+  - Filter cutoff
+  - Amplitude
+- Optional tempo sync
+
+────────────────────────────────────────
+🎧 EFFECTS ENGINE
+────────────────────────────────────────
+
+Built-in DSP effects:
+
+- Chorus (wide stereo modulation)
+- Delay (with optional tempo sync)
+- Reverb (algorithmic)
+- Optional bitcrusher / lo-fi effect
+
+All effects must be real DSP, not placeholders.
+
+────────────────────────────────────────
+🖥️ USER INTERFACE (HARDWARE STYLE)
+────────────────────────────────────────
+
+Design a dense, hardware-style synthesizer interface:
+
+Layout:
+- Slider-based interface (primary control method)
+- Clear modular sections:
+  - Oscillators
+  - Filter
+  - Envelope
+  - LFO
+  - Effects
+
+UI Characteristics:
+- Retro 90s digital workstation aesthetic
+- Highly parameter-dense (like hardware synth panels)
+- Real-time parameter response
+- No minimal or modern flat UI design
+
+Implementation:
+- JUCE GUI components only
+- Custom LookAndFeel allowed
+
+────────────────────────────────────────
+🎹 AUDIO REQUIREMENTS
+────────────────────────────────────────
+
+- Real-time synthesis engine
+- 44.1kHz / 48kHz support
+- Low-latency audio processing
+- No audio clipping or artifacts
+- Smooth parameter interpolation (no zipper noise)
+
+────────────────────────────────────────
+📁 PROJECT STRUCTURE
+────────────────────────────────────────
+
+Source/
+  Main.cpp
+  MainComponent.h/.cpp
+
+  Synth/
+    SynthEngine.h/.cpp
+    Voice.h/.cpp
+    Sound.h/.cpp
+    Oscillator.h/.cpp
+    Filter.h/.cpp
+    Envelope.h/.cpp
+    LFO.h/.cpp
+
+  FX/
+    Chorus.h/.cpp
+    Delay.h/.cpp
+    Reverb.h/.cpp
+
+  UI/
+    SynthUI.h/.cpp
+    SliderBank.h/.cpp
+    LookAndFeel.h/.cpp
+
+────────────────────────────────────────
+⚙️ BUILD SYSTEM (CMAKE + JUCE)
+────────────────────────────────────────
+
+Must include working CMakeLists.txt:
+- Proper JUCE setup
+- Required modules:
+  - juce_audio_basics
+  - juce_audio_devices
+  - juce_audio_processors
+  - juce_gui_basics
+  - juce_dsp
+
+Project must compile without manual fixes.
+
+────────────────────────────────────────
+🎹 STANDALONE FEATURES
+────────────────────────────────────────
+
+- Runs as a standalone app immediately
+- MIDI input support
+- Optional on-screen keyboard
+- Default preset: “Warm Digital Pad”
+- Sound plays instantly on startup
+- All controls are fully functional in real time
+
+────────────────────────────────────────
+🚫 CONSTRAINTS
+────────────────────────────────────────
+
+- No sample playback engine
+- No placeholder DSP functions
+- No broken or incomplete build system
+- No external paid libraries
+- Must be fully functional on first compile
+
+────────────────────────────────────────
+⭐ FINAL RESULT
+────────────────────────────────────────
+
+The final application must:
+- Run as a standalone synthesizer
+- Produce real synthesized audio immediately
+- Provide deep hands-on sound design control
+- Be structured for future VST3/AU export
