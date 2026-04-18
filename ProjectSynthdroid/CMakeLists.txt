@@ -35,6 +35,12 @@ target_sources(ProjectSynthdroid PRIVATE
     Source/MainComponent.cpp
 )
 
+target_compile_definitions(ProjectSynthdroid PRIVATE
+    JUCE_ALSA=0
+    JUCE_USE_ALSA=0
+    JUCE_DISABLE_AUDIO_MIDI_TEST=1
+)
+
 target_link_libraries(ProjectSynthdroid PRIVATE
     juce::juce_audio_basics
     juce::juce_audio_devices
