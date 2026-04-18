@@ -50,6 +50,21 @@ juce_add_gui_app(ProjectSynthdroid
     BUNDLE_ID "com.synthdroid.piano"
 )
 
+target_link_libraries(ProjectSynthdroid
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_devices
+        juce::juce_audio_formats
+        juce::juce_dsp
+        juce::juce_gui_extra
+)
+
+target_compile_definitions(ProjectSynthdroid
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+
 target_sources(ProjectSynthdroid PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp

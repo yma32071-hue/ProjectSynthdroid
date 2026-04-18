@@ -1,42 +1,62 @@
 #include "MainComponent.h"
 
 MainComponent::MainComponent()
+    : keyboard(keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard)
 {
-    setAudioChannels(0, 2); // Android-safe stereo output
+    addAndMakeVisible(keyboard);
+    keyboardState.addListener(this);
 
-    formatManager.registerBasicFormats();
-
-    touch = std::make_unique<TouchController>(engine, visual);
-
-    addAndMakeVisible(visual);
+    setAudioChannels(0, 2);
+    setSize(800, 200);
 }
 
-void MainComponent::prepareToPlay(int, double)
+MainComponent::~MainComponent()
 {
-    // Load samples from APK/assets folder OR filesystem
-    engine.loadSamples(juce::File("samples/piano"));
+    shutdownAudio();
 }
 
-void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+void MainComponent::prepareToPlay (int, double sampleRate)
 {
-    bufferToFill.clearActiveBufferRegion();
-
-    // ⚠️ This is simplified placeholder mixing
-    // In real build you'd stream samples or use AudioSourcePlayer
-
-    // (kept minimal for clarity)
+    currentSampleRate = sampleRate;
 }
 
-void MainComponent::releaseResources()
+void MainComponent::releaseResources() {}
+
+void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
 {
+    auto* left = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
+    auto* right = bufferToFill.buffer->getWritePointer(1, bufferToFill.startSample);
+
+    for (int i = 0; i < bufferToFill.numSamples; ++i)
+    {
+        float sample = 0.0f;
+
+        if (isPlaying)
+        {
+            sample = std::sin(angle) * level;
+            angle += angleDelta;
+        }
+
+        left[i] = sample;
+        right[i] = sample;
+    }
 }
 
-void MainComponent::paint(juce::Graphics& g)
+void MainComponent::handleNoteOn(juce::MidiKeyboardState*, int, int midiNoteNumber, float velocity)
 {
-    g.fillAll(juce::Colour(10, 10, 15));
+    auto frequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+
+    angleDelta = frequency * 2.0 * juce::MathConstants<double>::pi / currentSampleRate;
+    level = velocity * 0.25f;
+    isPlaying = true;
+}
+
+void MainComponent::handleNoteOff(juce::MidiKeyboardState*, int, int, float)
+{
+    isPlaying = false;
 }
 
 void MainComponent::resized()
 {
-    visual.setBounds(getLocalBounds());
+    keyboard.setBounds(getLocalBounds());
 }

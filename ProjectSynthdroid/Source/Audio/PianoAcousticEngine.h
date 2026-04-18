@@ -1,25 +1,29 @@
 #pragma once
 #include <JuceHeader.h>
+#include <map>
+#include <vector>
 
 class PianoAcousticEngine
 {
 public:
-    void loadSamples(const juce::File& folder);
+    void init();
 
     void noteOn(int note, float velocity);
     void noteOff(int note);
 
-    void renderNextBlock(juce::AudioBuffer<float>& buffer);
+    void render(juce::AudioBuffer<float>& buffer);
 
 private:
-    struct Voice
+    struct Sample
     {
-        juce::AudioBuffer<float> sample;
+        juce::AudioBuffer<float> buffer;
         int position = 0;
         bool active = false;
     };
 
-    std::map<int, std::vector<Voice>> voices;
+    // note → velocity layers
+    std::map<int, std::vector<Sample>> samples;
 
-    std::set<int> held;
+    int getLayer(float velocity);
+    void loadFromBinaryData();
 };

@@ -1,28 +1,33 @@
 #pragma once
 #include <JuceHeader.h>
-#include "PianoAcousticEngine.h"
-#include "PianoVisualEngine.h"
-#include "TouchController.h"
 
-class MainComponent : public juce::AudioAppComponent
+class MainComponent : public juce::AudioAppComponent,
+                      public juce::MidiKeyboardStateListener
 {
 public:
     MainComponent();
-    ~MainComponent() override = default;
+    ~MainComponent() override;
 
-    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
+    void prepareToPlay (int, double) override;
+    void getNextAudioBlock (const juce::AudioSourceChannelInfo&) override;
     void releaseResources() override;
 
-    void paint(juce::Graphics&) override;
     void resized() override;
 
+    // MIDI callbacks
+    void handleNoteOn(juce::MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOff(juce::MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+
 private:
-    PianoAcousticEngine engine;
-    PianoVisualEngine visual;
-    std::unique_ptr<TouchController> touch;
+    juce::MidiKeyboardState keyboardState;
+    juce::MidiKeyboardComponent keyboard;
 
-    juce::AudioFormatManager formatManager;
+    // simple synth state
+    double currentSampleRate = 44100.0;
+    double angle = 0.0;
+    double angleDelta = 0.0;
+    float level = 0.0f;
+    bool isPlaying = false;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
