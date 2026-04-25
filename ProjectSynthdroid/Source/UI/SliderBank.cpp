@@ -16,7 +16,7 @@ void SliderBank::addControl(const Control& control)
     item->slider.onValueChange = [slider = &item->slider, callback = control.onChange] { callback(static_cast<float>(slider->getValue())); };
     item->label.setText(control.name, juce::dontSendNotification);
     item->label.setJustificationType(juce::Justification::centred);
-    item->label.setFont(juce::FontOptions(11.0f, juce::Font::bold));
+    item->label.setFont(juce::Font(11.0f, juce::Font::bold));
     addAndMakeVisible(item->slider);
     addAndMakeVisible(item->label);
     items.push_back(std::move(item));
@@ -46,6 +46,6 @@ void SliderBank::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff394564));
     g.drawRoundedRectangle(bounds, 7.0f, 1.0f);
     g.setColour(juce::Colour(0xffa6c9ff));
-    g.setFont(juce::FontOptions(13.0f, juce::Font::bold));
+    g.setFont(juce::Font(13.0f, juce::Font::bold));
     g.drawText(title, getLocalBounds().removeFromTop(24), juce::Justification::centred);
 }

@@ -1,81 +1,19 @@
 #include "MainComponent.h"
 
-/// =======================
-/// SIMPLE SINE WAVE VOICE
-/// =======================
-class SineVoice : public juce::SynthesiserVoice
-{
-public:
-    bool canPlaySound (juce::SynthesiserSound*) override { return true; }
-
-    void startNote (int midiNoteNumber, float velocity,
-                    juce::SynthesiserSound*, int) override
-    {
-        frequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
-        level = velocity * 0.2f;
-        angle = 0.0;
-        angleDelta = frequency * 2.0 * juce::MathConstants<double>::pi / getSampleRate();
-    }
-
-    void stopNote (float, bool allowTailOff) override
-    {
-        clearCurrentNote();
-    }
-
-    void pitchWheelMoved (int) override {}
-    void controllerMoved (int, int) override {}
-
-    void renderNextBlock (juce::AudioBuffer<float>& outputBuffer,
-                          int startSample,
-                          int numSamples) override
-    {
-        for (int i = 0; i < numSamples; ++i)
-        {
-            float sample = std::sin(angle) * level;
-            angle += angleDelta;
-
-            for (int ch = 0; ch < outputBuffer.getNumChannels(); ++ch)
-                outputBuffer.addSample(ch, startSample + i, sample);
-        }
-    }
-
-private:
-    double frequency = 440.0;
-    double angle = 0.0;
-    double angleDelta = 0.0;
-    float level = 0.0f;
-};
-
-/// =======================
-/// EMPTY SOUND
-/// =======================
-class SineSound : public juce::SynthesiserSound
-{
-public:
-    bool appliesToNote (int) override { return true; }
-    bool appliesToChannel (int) override { return true; }
-};
-
-/// =======================
-/// MAIN COMPONENT
-/// =======================
 MainComponent::MainComponent()
     : keyboard(keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard)
+    
 {
     addAndMakeVisible(keyboard);
 
-    setAudioChannels(0, 2);
 
-    // synth setup
-    synth.clearSounds();
-    synth.clearVoices();
+    keyboardState.addListener(this);
+    
+    setAudioChannels (0, 2);
 
-    synth.addSound(new SineSound());
+    synth.init();
 
-    for (int i = 0; i < 8; ++i)
-        synth.addVoice(new SineVoice());
-
-    setSize(800, 200);
+    setSize (800, 200);
 }
 
 MainComponent::~MainComponent()
@@ -83,31 +21,61 @@ MainComponent::~MainComponent()
     shutdownAudio();
 }
 
-void MainComponent::prepareToPlay (int, double sampleRate)
+void MainComponent::handleNoteOn(juce::MidiKeyboardState*,
+                                int,
+                                int note,
+                                float velocity)
 {
-    synth.setCurrentPlaybackSampleRate(sampleRate);
+    synth.noteOn(note, velocity);
 }
 
-void MainComponent::releaseResources() {}
+void MainComponent::handleNoteOff(juce::MidiKeyboardState*,
+                                 int,
+                                 int note,
+                                 float)
+{
+    synth.noteOff(note);
+}
 
-void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
+void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
+{
+    synth.init(); // or synth.setSampleRate(sampleRate) if you have it
+}
+
+void MainComponent::releaseResources()
+{
+}
+
+void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     bufferToFill.clearActiveBufferRegion();
 
     juce::MidiBuffer midi;
 
-    keyboardState.processNextMidiBuffer(midi,
-                                        bufferToFill.startSample,
-                                        bufferToFill.numSamples,
-                                        true);
+    keyboardState.processNextMidiBuffer(
+        midi,
+        bufferToFill.startSample,
+        bufferToFill.numSamples,
+        true);
 
-    synth.renderNextBlock(*bufferToFill.buffer,
-                          midi,
-                          bufferToFill.startSample,
-                          bufferToFill.numSamples);
+    // =========================
+    // CONNECT MIDI → ENGINE
+    // =========================
+    for (const auto metadata : midi)
+    {
+        const auto msg = metadata.getMessage();
+
+        if (msg.isNoteOn())
+            synth.noteOn(msg.getNoteNumber(), msg.getVelocity());
+
+        else if (msg.isNoteOff())
+            synth.noteOff(msg.getNoteNumber());
+    }
+
+    synth.render(*bufferToFill.buffer);
 }
 
 void MainComponent::resized()
 {
-    keyboard.setBounds(getLocalBounds());
+    keyboard.setBounds (getLocalBounds());
 }

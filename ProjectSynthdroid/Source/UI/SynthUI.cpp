@@ -91,9 +91,9 @@ void SynthUI::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff151c31));
     g.fillRect(header);
     g.setColour(juce::Colour(0xffffd76b));
-    g.setFont(juce::FontOptions(25.0f, juce::Font::bold));
+    g.setFont(juce::Font(25.0f, juce::Font::bold));
     g.drawText("DIGITAL WORKSTATION SYNTH", header.reduced(18, 0), juce::Justification::centredLeft);
     g.setColour(juce::Colour(0xff8ba9d8));
-    g.setFont(juce::FontOptions(13.0f));
+    g.setFont(juce::Font(13.0f));
     g.drawText("Original 90s-style partial synth with factory-style demo riffs", header.reduced(18, 0), juce::Justification::centredRight);
 }

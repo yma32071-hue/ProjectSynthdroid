@@ -39,7 +39,7 @@ void PianoKeyboard::paint(juce::Graphics& g)
         if (isBlack)
         {
             g.setColour(juce::Colours::black.withAlpha(0.6f));
-            g.drawRect(x, 0, keyWidth, h);
+            g.drawRect((float)x, 0.0f, (float)keyWidth, (float)h);
         }
     }
 }
